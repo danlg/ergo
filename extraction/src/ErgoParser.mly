@@ -39,8 +39,10 @@ let mk_provenance
 
 %token OPENTEXT
 %token CLOSEEXPR
-%token <string> OPENEXPR
+%token CLOSEVAR
 %token <string> CLOSETEXT
+%token <string> OPENEXPR
+%token <string> OPENVAR
 
 %token NAMESPACE IMPORT DEFINE FUNCTION
 %token ABSTRACT TRANSACTION CONCEPT EVENT ASSET PARTICIPANT ENUM EXTENDS
@@ -458,6 +460,16 @@ textlist:
 | s0 = OPENEXPR e = expr CLOSEEXPR sl = textlist
     { let sfirst = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
       [ sfirst ; e ] @ sl }
+| s0 = OPENVAR v = IDENT CLOSEVAR sl = textlist
+    { let sfirst = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
+      let sopenvar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string ("<variable name=\"" ^ v ^ "\" value=\""))) in
+      let e =
+        ErgoCompiler.eunaryoperator (mk_provenance $startpos $endpos)
+          (EOpDot (Util.char_list_of_string v))
+          (ErgoCompiler.ethis_contract (mk_provenance $startpos $endpos))
+      in
+      let sclosevar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string "\"/>")) in
+      [ sfirst ; sopenvar; e; sclosevar ] @ sl }
 
 (* foreach list *)
 foreachlist:

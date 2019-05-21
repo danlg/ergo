@@ -32,8 +32,9 @@ let filename = ref ""
 (* Lexer Handler *)
 
 type lex_state =
-  | TextState
   | ExprState
+  | TextState
+  | VarState
 
 type lex_handler =
     { buffer: Buffer.t;
@@ -51,6 +52,8 @@ let lh_make_expr () =
   lh_make ExprState
 let lh_make_text () =
   lh_make TextState
+let lh_make_var () =
+  lh_make VarState
 
 let lh_reset_string lh =
   reset_string lh.buffer

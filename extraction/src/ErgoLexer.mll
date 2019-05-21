@@ -195,6 +195,7 @@ and linecomment = parse
 and text lh = parse
 | "{{" { lh_push_state lh ExprState; OPENEXPR (lh_get_string lh) }
 | "}}" { ignore(lh_pop_state lh); CLOSETEXT (lh_get_string lh) }
+| "[{" { lh_push_state lh VarState; OPENVAR (lh_get_string lh) }
 | '\\' (['0'-'9'] as c) (['0'-'9'] as d) (['0'-'9']  as u)
     { let v = decimal_code c d u in
     if v > 255 then
@@ -204,3 +205,15 @@ and text lh = parse
 | eof    { raise (LexError "Text not terminated.\n") }
 | _      { lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); text lh lexbuf }
 
+and var lh = parse
+| [' ' '\t']
+    { var lh lexbuf }
+| newline
+    { Lexing.new_line lexbuf; token lh lexbuf }
+| letter identchar*
+    { let s = Lexing.lexeme lexbuf in
+      IDENT s }
+| "}]"
+    { lh_reset_string lh;
+      ignore(lh_pop_state lh);
+      CLOSEVAR }

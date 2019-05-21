@@ -11,18 +11,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace org.accordproject.interests
 
-import org.accordproject.loan.interests.*
+import org.accordproject.time.* from https://models.accordproject.org/v2.0/time.cto
 
-contract Interests over TemplateModel {
-	// Generate Text
-	clause generateText() : String {
-		return {{
-This is a fixed interest loan to the amount of {{contract.loanAmount}}
-at the yearly interest rate of {{contract.rate}}%
-with a loan term of {{contract.loanDuration}},
-and monthly payments of {{monthlyPaymentFormula(contract.loanAmount,contract.rate,contract.loanDuration)}}
-}}
-	}
+transaction Request {
+  o String input
+}
+
+transaction Response {
+  o String output
+}
+
+concept TemplateModel {
+  o Double loanAmount
+  o Double rate
+  o Integer loanDuration
+}
+
+concept TextResponse {
+  o String text
 }

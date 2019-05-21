@@ -22,7 +22,7 @@ contract Interests over TemplateModel {
 This is a fixed interest loan to the amount of {{contract.loanAmount}}
 at the yearly interest rate of {{contract.rate}}%
 with a loan term of {{contract.loanDuration}},
-and montly payments of {{monthlyPaymentFormula(contract.loanAmount,contract.rate,contract.loanDuration)}}
+and monthly payments of {{monthlyPaymentFormula(contract.loanAmount,contract.rate,contract.loanDuration)}}
 total interests: {{cummulativeInterests(contract.loanAmount,contract.rate,contract.loanDuration)}}
 }}
 	}

@@ -36,8 +36,9 @@ let parse parser lexer buf =
 
 let lexer_dispatch lh buf  =
   begin match lh_top_state lh with
-  | TextState -> ErgoLexer.text lh buf
   | ExprState -> ErgoLexer.token lh buf
+  | TextState -> ErgoLexer.text lh buf
+  | VarState -> ErgoLexer.var lh buf
   end
 
 let parse_ergo_module f : ergo_module =

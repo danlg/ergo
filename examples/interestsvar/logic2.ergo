@@ -16,23 +16,4 @@ namespace org.accordproject.interests
 import org.accordproject.loan.interests.*
 
 contract Interests over TemplateModel {
-	// Generate Text
-	clause generateText() : String {
-		return {{
-This is a fixed interest loan to the amount of {{contract.loanAmount}}
-at the yearly interest rate of {{contract.rate}}%
-with a loan term of {{contract.loanDuration}},
-and monthly payments of {{
-	let term = longToDouble(contract.loanDuration * 12);
-  if (contract.rate = 0.0)
-	then (contract.loanAmount / term)
-  else
-    let monthlyRate = (contract.rate / 12.0) / 100.0;
-    let monthlyPayment =
-      (monthlyRate * contract.loanAmount)
-      / (1.0 - ((1.0 + monthlyRate) ^ (-term)));
-			roundn(monthlyPayment, 0)
-}}
-}}
-	}
 }
