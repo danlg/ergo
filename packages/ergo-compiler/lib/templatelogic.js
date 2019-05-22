@@ -219,7 +219,7 @@ unwrapError(__result);
      * @param {string} fileName - an optional file name to associate with the template file
      */
     addTemplateFile(templateFile,fileName) {
-      this.getScriptManager().addTemplateFile(templateFile,fileName);
+        this.getScriptManager().addTemplateFile(templateFile,fileName);
     }
 
     /**

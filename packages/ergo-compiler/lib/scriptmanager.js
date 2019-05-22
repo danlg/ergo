@@ -96,7 +96,7 @@ class ScriptManager {
      * @param {string} fileName - an optional file name to associate with the template file
      */
     addTemplateFile(templateFile,fileName) {
-      this.sourceTemplate = { 'name' : fileName, 'content': templateFile };
+        this.sourceTemplate = { 'name' : fileName, 'content': templateFile };
     }
 
     /**
