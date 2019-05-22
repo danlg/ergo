@@ -30,6 +30,12 @@ let mk_provenance
     (start_pos: Lexing.position)
     (end_pos: Lexing.position) : provenance =
     mk_provenance_of_loc_pair !filename start_pos end_pos
+
+let make_template_variable tagname startpos endpos ve =
+  let sopenvar = ErgoCompiler.econst (mk_provenance startpos endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string ("<" ^ tagname ^ " name=\"" ^ (fst ve) ^ "\" value=\""))) in
+  let sclosevar = ErgoCompiler.econst (mk_provenance startpos endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string "\"/>")) in
+  [ sopenvar; (snd ve); sclosevar ]
+
 %}
 
 %token <int> INT
@@ -471,9 +477,7 @@ textlist:
       [ sfirst ; e ] @ sl }
 | s0 = OPENVAR ve = varexpr CLOSEVAR sl = textlist
     { let sfirst = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
-      let sopenvar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string ("<variable name=\"" ^ (fst ve) ^ "\" value=\""))) in
-      let sclosevar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string "\"/>")) in
-      [ sfirst ; sopenvar; (snd ve); sclosevar ] @ sl }
+      [ sfirst ] @ (make_template_variable "variable" $startpos $endpos ve) @ sl }
 
 varexpr:
 | s = STRING COLONQUESTION v = IDENT
