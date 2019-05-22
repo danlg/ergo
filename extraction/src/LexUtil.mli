@@ -31,7 +31,8 @@ type lex_handler
 
 val lh_make_expr : unit -> lex_handler
 val lh_make_text : unit -> lex_handler
-val lh_make_var : unit -> lex_handler
+
+val lh_in_template : lex_handler -> bool
 
 val lh_reset_string : lex_handler -> unit
 

@@ -28,7 +28,7 @@ describe('#vmengine', () => {
 
     it('should cache a script', () => {
         const engine = new VMEngine();
-        const templateLogic = new TemplateLogic('es6');
+        const templateLogic = new TemplateLogic('es6', null);
         const script = 'const a = 1';
         templateLogic.addLogicFile(script,'test2.js');
         templateLogic.compileLogicSync(false);

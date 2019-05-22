@@ -170,6 +170,8 @@ and string lh = parse
       else lh_add_char_to_string lh (Char.chr v); string lh lexbuf }
   | '\\' (backslash_escapes as c) { lh_add_char_to_string lh (char_for_backslash c); string lh lexbuf }
   | eof    { raise (LexError "String not terminated.") }
+  | newline
+      { Lexing.new_line lexbuf; lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); string lh lexbuf }
   | _      { lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); string lh lexbuf }
 
 and comment cpt = parse
@@ -202,7 +204,11 @@ and text lh = parse
       raise (LexError (Printf.sprintf "illegal ascii code: '\\%c%c%c'" c d u))
     else lh_add_char_to_string lh(Char.chr v); text lh lexbuf }
 | '\\' (backslash_escapes as c) { lh_add_char_to_string lh (char_for_backslash c); text lh lexbuf }
-| eof    { raise (LexError "Text not terminated.\n") }
+| eof    { if lh_in_template lh
+           then begin ignore(lh_pop_state lh); CLOSETEXT (lh_get_string lh) end
+           else raise (LexError "Text not terminated.\n") }
+| newline
+    { Lexing.new_line lexbuf; lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); text lh lexbuf }
 | _      { lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); text lh lexbuf }
 
 and var lh = parse

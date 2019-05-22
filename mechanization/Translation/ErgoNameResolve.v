@@ -828,6 +828,62 @@ Section ErgoNameResolution.
         end
       end.
 
+    Definition generateTextClause (prov:provenance) (template:lrergo_expr) : lrergo_clause :=
+      mkClause
+        prov
+        "generateText"%string
+        (mkErgoTypeSignature
+           prov
+           nil
+           (Some (ErgoTypeString prov))
+           None)
+        (Some (SReturn prov template)).
+    
+    Fixpoint add_template_to_clauses (prov:provenance) (template:lrergo_expr) (cl:list lrergo_clause) :=
+      match cl with
+      | nil =>
+        (generateTextClause prov template) :: nil
+      | cl1 :: rest =>
+        if (string_dec cl1.(clause_name) "generateText")
+        then cl
+        else cl1 :: (add_template_to_clauses prov template rest)
+      end.
+
+    Definition add_template_to_contract (template:lrergo_expr) (c:lrergo_contract) :=
+      mkContract
+        c.(contract_annot)
+        c.(contract_template)
+        c.(contract_state)
+        (add_template_to_clauses c.(contract_annot) template c.(contract_clauses)).
+
+    Definition add_template_to_declaration (template:lrergo_expr) (decl:lrergo_declaration) :=
+      match decl with
+      | DContract a ln c => DContract a ln (add_template_to_contract template c)
+      | _ => decl
+      end.
+
+    Definition add_template_to_module (template:lrergo_expr) (main:option lrergo_module) :=
+      match main with
+      | None => None
+      | Some emod =>
+        Some (
+            mkModule
+              emod.(module_annot)
+              emod.(module_file)
+              emod.(module_prefix)              
+              emod.(module_namespace)
+              (List.map (add_template_to_declaration template) emod.(module_declarations))
+          )
+      end.
+    
+    Definition preprocess_ctos_and_ergos (inputs:list lrergo_input) (template:option lrergo_expr)
+      : (list lrcto_package * list lrergo_module * option lrergo_module) :=
+      let '(ctos, ergos, main) := split_ctos_and_ergos inputs in
+      match template with
+      | None => (ctos,ergos,main)
+      | Some template => (ctos,ergos, add_template_to_module template main)
+      end.
+
   End Top.
 
   Section Examples.

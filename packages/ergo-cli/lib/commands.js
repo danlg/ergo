@@ -36,6 +36,25 @@ function getJson(input) {
 }
 
 /**
+ * Load a file or JSON string
+ *
+ * @param {object} input either a file name or a json string
+ * @return {string} content of file
+ */
+function getTemplate(input) {
+    if (!input) {
+        return null;
+    } else {
+        if (input.file) {
+            const content = Fs.readFileSync(input.file, 'utf8');
+            return { content: content, name: input.file };
+        } else {
+            return input;
+        }
+    }
+}
+
+/**
  * Utility class that implements the commands exposed by the Ergo CLI.
  * @class
  */
@@ -49,11 +68,14 @@ class Commands {
      * @param {string} stateInput the contract state
      * @param {string} currentTime the definition of 'now'
      * @param {string[]} requestsInput the requests
+     * @param {string} templateInput the template
      * @returns {object} Promise to the result of execution
      */
-    static execute(ergoPaths,ctoPaths,contractInput,stateInput,currentTime,requestsInput) {
+    static execute(ergoPaths,ctoPaths,contractInput,stateInput,currentTime,requestsInput,templateInput) {
+        // Get the template if provided
+        const sourceTemplate = getTemplate(templateInput);
         const engine = new Engine();
-        const templateLogic = new TemplateLogic('es6');
+        const templateLogic = new TemplateLogic('es6',sourceTemplate);
         templateLogic.addErgoBuiltin();
         if (!ergoPaths) { return Promise.reject('No input ergo found'); }
         for (let i = 0; i < ergoPaths.length; i++) {
@@ -97,11 +119,14 @@ class Commands {
      * @param {string} stateInput the contract state
      * @param {string} currentTime the definition of 'now'
      * @param {object} paramsInput the parameters for the clause
+     * @param {string} templateInput the template
      * @returns {object} Promise to the result of invocation
      */
-    static invoke(ergoPaths,ctoPaths,clauseName,contractInput,stateInput,currentTime,paramsInput) {
+    static invoke(ergoPaths,ctoPaths,clauseName,contractInput,stateInput,currentTime,paramsInput,templateInput) {
+        // Get the template if provided
+        const sourceTemplate = getTemplate(templateInput);
         const engine = new Engine();
-        const templateLogic = new TemplateLogic('es6');
+        const templateLogic = new TemplateLogic('es6',sourceTemplate);
         templateLogic.addErgoBuiltin();
         if (!ergoPaths) { return Promise.reject('No input ergo found'); }
         for (let i = 0; i < ergoPaths.length; i++) {
@@ -129,11 +154,14 @@ class Commands {
      * @param {string} contractInput the contract data
      * @param {string} currentTime the definition of 'now'
      * @param {object} paramsInput the parameters for the clause
+     * @param {string} templateInput the template
      * @returns {object} Promise to the result of execution
      */
-    static init(ergoPaths,ctoPaths,contractInput,currentTime,paramsInput) {
+    static init(ergoPaths,ctoPaths,contractInput,currentTime,paramsInput,templateInput) {
+        // Get the template if provided
+        const sourceTemplate = getTemplate(templateInput);
         const engine = new Engine();
-        const templateLogic = new TemplateLogic('es6');
+        const templateLogic = new TemplateLogic('es6',sourceTemplate);
         templateLogic.addErgoBuiltin();
         if (!ergoPaths) { return Promise.reject('No input ergo found'); }
         for (let i = 0; i < ergoPaths.length; i++) {
@@ -159,11 +187,14 @@ class Commands {
      * @param {string[]} ctoPaths paths to CTO models
      * @param {string} contractInput the contract data
      * @param {string} currentTime the definition of 'now'
+     * @param {string} templateInput the template
      * @returns {object} Promise to the result of execution
      */
-    static generateText(ergoPaths,ctoPaths,contractInput,currentTime) {
+    static generateText(ergoPaths,ctoPaths,contractInput,currentTime,templateInput) {
+        // Get the template if provided
+        const sourceTemplate = getTemplate(templateInput);
         const engine = new Engine();
-        const templateLogic = new TemplateLogic('es6');
+        const templateLogic = new TemplateLogic('es6',sourceTemplate);
         templateLogic.addErgoBuiltin();
         if (!ergoPaths) { return Promise.reject('No input ergo found'); }
         for (let i = 0; i < ergoPaths.length; i++) {

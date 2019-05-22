@@ -41,6 +41,10 @@ let iter_inputs gconf f g h o =
   iter_array_gen gconf
     (fun gconf a ->
        ignore (Js.array_map (fun x -> f gconf (Js.to_string (g x), Js.to_string (h x))) a)) o
+let iter_template gconf f g h o =
+  iter_array_gen gconf
+    (fun gconf a ->
+       ignore (Js.Opt.iter a (fun x -> f gconf (Js.to_string (g x), Js.to_string (h x))))) o
 
 (**********************************)
 (* Equivalent to qcert cmd        *)
@@ -51,6 +55,12 @@ let global_config_of_json gconf j =
   let apply = apply gconf in
   let apply_bool = apply_bool gconf in
   let iter_inputs = iter_inputs gconf in
+  let iter_template = iter_template gconf in
+  (* Template *)
+  iter_template (fun gconf x -> ErgoConfig.add_template_file gconf x)
+    (fun x -> x##.name)
+    (fun x -> x##.content)
+    j##.sourceTemplate;
   (* CTOs *)
   iter_inputs (fun gconf x -> ErgoConfig.add_cto_file gconf x)
     (fun x -> x##.name)
@@ -127,8 +137,9 @@ let ergo_compile input =
   begin try
     let gconf = global_config_of_json gconf input in
     let target_lang = ErgoConfig.get_target_lang gconf in
+    let template = ErgoConfig.get_template gconf in
     let all_modules = ErgoConfig.get_all_sorted gconf in
-    let (contract_name,file,res) = ErgoCompile.ergo_compile target_lang all_modules in
+    let (contract_name,file,res) = ErgoCompile.ergo_compile target_lang all_modules template in
     let res = ErgoCompile.ergo_link gconf res in
     begin match contract_name with
     | None -> json_of_result res

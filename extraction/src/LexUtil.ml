@@ -38,22 +38,25 @@ type lex_state =
 
 type lex_handler =
     { buffer: Buffer.t;
-      state: lex_state Stack.t }
+      state: lex_state Stack.t;
+      in_template: bool }
 
-let lh_make s_init =
+let lh_make s_init tem =
   let st = Stack.create () in
   begin
     Stack.push s_init st;
     { buffer = string_buff();
-      state = st; }
+      state = st;
+      in_template = tem }
   end
 
 let lh_make_expr () =
-  lh_make ExprState
+  lh_make ExprState false
 let lh_make_text () =
-  lh_make TextState
-let lh_make_var () =
-  lh_make VarState
+  lh_make TextState true
+
+let lh_in_template lh =
+  lh.in_template
 
 let lh_reset_string lh =
   reset_string lh.buffer

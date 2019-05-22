@@ -32,7 +32,6 @@ val ergo_parse_error : string -> string -> Lexing.position -> Lexing.position ->
 val wrap_jerrors : ('a -> 'b) -> 'a eresult -> 'b
 
 val string_of_error_with_source_text : string -> eerror -> string
-val string_of_error_with_source_file : string -> eerror -> string
 val string_of_error_with_table : (string * string) list -> eerror -> string
 
 (** [mk_provenance_of_loc_pair filename start end] *)
@@ -47,7 +46,7 @@ val parse_args :
   -> Arg.usage_msg
   -> string array
   -> 'conf
-  -> ((string * string) list * (string * string) list)
+  -> ((string * string) list * (string * string) list * (string * string) option)
 
 val patch_argv : string array -> string array
 

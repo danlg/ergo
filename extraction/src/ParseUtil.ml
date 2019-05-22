@@ -45,6 +45,8 @@ let parse_ergo_module f : ergo_module =
   parse ErgoParser.main_module (lexer_dispatch (lh_make_expr ())) f
 let parse_ergo_declarations f : ergo_declaration list =
   parse ErgoParser.top_decls (lexer_dispatch (lh_make_expr ())) f
+let parse_template f : ergo_expr =
+  parse ErgoParser.template (lexer_dispatch (lh_make_text ())) f
 
 (** Parse from buffer *)
 let parse_string p_fun s =
@@ -57,6 +59,9 @@ let parse_ergo_module_from_string fname s : ergo_module =
 let parse_ergo_declarations_from_string fname s : ergo_declaration list =
   filename := fname;
   parse_string parse_ergo_declarations s
+let parse_template_from_string fname s : ergo_expr =
+  filename := fname;
+  parse_string parse_template s
 
 let parse_cto_package_from_string fname s : cto_package =
   filename := unpatch_cto_extension fname;

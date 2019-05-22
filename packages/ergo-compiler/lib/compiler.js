@@ -64,15 +64,17 @@ class Compiler {
      * @param {Array<{name:string, content:string}>} ctoSources CTO models
      * @param {string} target language (es5|es6|cicero|java)
      * @param {boolean} link whether to link the javascript runtime
+     * @param {string} sourceTemplate - an optional template source
      * @returns {string} The compiled JavaScript code
      */
-    static compileToJavaScript(ergoSources,ctoSources,target,link) {
+    static compileToJavaScript(ergoSources,ctoSources,target,link,sourceTemplate) {
         // Built-in config
         const config= {
             'source' : 'ergo',
             'target' : target,
             'link' : link
         };
+        config.sourceTemplate = sourceTemplate ? sourceTemplate : null;
         config.ergo = [];
         for (let i = 0; i < ergoSources.length; i++) {
             config.ergo.push(ergoSources[i]);

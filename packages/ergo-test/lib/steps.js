@@ -65,7 +65,7 @@ Before(function () {
     this.engine = new Engine();
     this.rootdir = Util.resolveRootDir(this.parameters);
     this.currentTime = '1970-01-01T00:00:00Z';
-    this.templateLogic = new TemplateLogic('es6');
+    this.templateLogic = new TemplateLogic('es6', null);
     this.state = defaultState;
     this.templateLogic.addErgoBuiltin();
 });

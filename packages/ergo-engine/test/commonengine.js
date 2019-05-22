@@ -87,7 +87,7 @@ function runWorkload(Engine, target) {
 
     beforeEach(async function () {
         engine = new Engine();
-        templateLogic = new TemplateLogic(target);
+        templateLogic = new TemplateLogic(target, null);
         templateLogic.addErgoBuiltin();
     });
 

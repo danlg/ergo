@@ -65,7 +65,7 @@ require('yargs')
                 Logger.info(JSON.stringify(result));
             })
             .catch((err) => {
-                Logger.error(err.message + ' ' + JSON.stringify(err));
+                Logger.error(err.message + '\n' + JSON.stringify(err));
             });
     })
     .command('invoke', 'invoke a clause for an Ergo contract', (yargs) => {
@@ -91,6 +91,11 @@ require('yargs')
             type: 'string',
             default: {}
         });
+        yargs.option('template', {
+            describe: 'path to the template (.tem) file',
+            type: 'string',
+            default: null
+        });
     }, (argv) => {
         let ctoPaths = [];
         let ergoPaths = [];
@@ -112,12 +117,12 @@ require('yargs')
         }
 
         // Run contract
-        Commands.invoke(ergoPaths, ctoPaths, argv.clauseName, { file: argv.contract }, { file: argv.state }, argv.currentTime, { file: argv.params })
+        Commands.invoke(ergoPaths, ctoPaths, argv.clauseName, { file: argv.contract }, { file: argv.state }, argv.currentTime, { file: argv.params }, argv.template ? { file: argv.template } : null)
             .then((result) => {
                 Logger.info(JSON.stringify(result));
             })
             .catch((err) => {
-                Logger.error(err.message + ' ' + JSON.stringify(err));
+                Logger.error(err.message + '\n' + JSON.stringify(err));
             });
     })
     .command('init', 'invoke init for an Ergo contract', (yargs) => {
@@ -162,7 +167,7 @@ require('yargs')
                 Logger.info(JSON.stringify(result));
             })
             .catch((err) => {
-                Logger.error(err.message + ' ' + JSON.stringify(err));
+                Logger.error(err.message + '\n' + JSON.stringify(err));
             });
     })
     .command('generateText', 'invoke generateText for an Ergo contract', (yargs) => {
@@ -175,6 +180,11 @@ require('yargs')
             describe: 'the current time',
             type: 'string',
             default: Moment().format() // Defaults to now
+        });
+        yargs.option('template', {
+            describe: 'path to the template (.tem) file',
+            type: 'string',
+            default: null
         });
     }, (argv) => {
         let ctoPaths = [];
@@ -197,12 +207,12 @@ require('yargs')
         }
 
         // Run contract
-        Commands.generateText(ergoPaths, ctoPaths, { file: argv.contract }, argv.currentTime)
+        Commands.generateText(ergoPaths, ctoPaths, { file: argv.contract }, argv.currentTime, argv.template ? { file: argv.template } : null)
             .then((result) => {
                 Logger.info(result.response);
             })
             .catch((err) => {
-                Logger.error(err.message + ' ' + JSON.stringify(err));
+                Logger.error(err.message + '\n' + JSON.stringify(err));
             });
     })
     .option('verbose', {

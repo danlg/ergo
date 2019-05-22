@@ -92,6 +92,7 @@ let mk_provenance
 
 %start <ErgoComp.ErgoCompiler.ergo_module> main_module
 %start <ErgoComp.ErgoCompiler.ergo_declaration list> top_decls
+%start <ErgoComp.ErgoCompiler.ergo_expr> template
 
 %%
 
@@ -453,7 +454,13 @@ expr:
 | e1 = expr PLUSPLUS e2 = expr
     { ErgoCompiler.ebinarybuiltin (mk_provenance $startpos $endpos) ErgoCompiler.ErgoOps.Binary.opstringconcat e1 e2 }
 
-(* text list *)
+(* text *)
+template:
+| sl = textlist s0 = CLOSETEXT
+    { let slast = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
+      let sl' = sl @ [slast] in
+      ErgoCompiler.etext (mk_provenance $startpos $endpos) sl' }
+
 textlist:
 |
     { [] }

@@ -36,12 +36,14 @@ class ScriptManager {
      * </p>
      * @param {String} target  - compiler target (either: 'cicero', 'es5', 'es6', or 'java')
      * @param {ModelManager} modelManager - The ModelManager to use for this ScriptManager
+     * @param {string} sourceTemplate - an optional template source
      */
-    constructor(target, modelManager) {
+    constructor(target, modelManager, sourceTemplate) {
         this.target = target;
         this.modelManager = modelManager;
         this.scripts = {};
         this.compiledScript = null;
+        this.sourceTemplate = sourceTemplate;
     }
 
     /**
@@ -288,7 +290,7 @@ class ScriptManager {
         } else {
             // Do not link to runtime for Java target, only for JavaScript
             const link = this.target === 'java' ? false : true;
-            const compiledErgo = ErgoCompiler.compileToJavaScript(sourceErgo,this.modelManager.getModels(),this.target,link);
+            const compiledErgo = ErgoCompiler.compileToJavaScript(sourceErgo,this.modelManager.getModels(),this.target,link, this.sourceTemplate);
             if (compiledErgo.hasOwnProperty('error')) {
                 throw new ErgoError(compiledErgo.error);
             }
