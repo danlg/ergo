@@ -73,6 +73,8 @@ let mk_provenance
 %token LCURLY RCURLY
 %token EOF
 
+%token COLONQUESTION
+
 %left SEMI
 %left ELSE
 %left RETURN
@@ -467,16 +469,19 @@ textlist:
 | s0 = OPENEXPR e = expr CLOSEEXPR sl = textlist
     { let sfirst = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
       [ sfirst ; e ] @ sl }
-| s0 = OPENVAR v = IDENT CLOSEVAR sl = textlist
+| s0 = OPENVAR ve = varexpr CLOSEVAR sl = textlist
     { let sfirst = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s0)) in
-      let sopenvar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string ("<variable name=\"" ^ v ^ "\" value=\""))) in
-      let e =
-        ErgoCompiler.eunaryoperator (mk_provenance $startpos $endpos)
-          (EOpDot (Util.char_list_of_string v))
-          (ErgoCompiler.ethis_contract (mk_provenance $startpos $endpos))
-      in
+      let sopenvar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string ("<variable name=\"" ^ (fst ve) ^ "\" value=\""))) in
       let sclosevar = ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string "\"/>")) in
-      [ sfirst ; sopenvar; e; sclosevar ] @ sl }
+      [ sfirst ; sopenvar; (snd ve); sclosevar ] @ sl }
+
+varexpr:
+| s = STRING COLONQUESTION v = IDENT
+    { (v,ErgoCompiler.econst (mk_provenance $startpos $endpos) (ErgoCompiler.ErgoData.dstring (Util.char_list_of_string s))) }
+| v = IDENT
+    { (v,ErgoCompiler.eunaryoperator (mk_provenance $startpos $endpos)
+          (EOpDot (Util.char_list_of_string v))
+          (ErgoCompiler.ethis_contract (mk_provenance $startpos $endpos))) }
 
 (* foreach list *)
 foreachlist:

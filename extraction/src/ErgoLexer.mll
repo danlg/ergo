@@ -212,6 +212,8 @@ and text lh = parse
 | _      { lh_add_char_to_string lh (Lexing.lexeme_char lexbuf 0); text lh lexbuf }
 
 and var lh = parse
+| eof { EOF }
+| ":?" { COLONQUESTION }
 | [' ' '\t']
     { var lh lexbuf }
 | newline
@@ -219,6 +221,11 @@ and var lh = parse
 | letter identchar*
     { let s = Lexing.lexeme lexbuf in
       IDENT s }
+| '"'
+    { let string_start = lexbuf.lex_start_p in
+      lh_reset_string lh; string lh lexbuf;
+      lexbuf.lex_start_p <- string_start;
+      let s = lh_get_string lh in STRING s }
 | "}]"
     { lh_reset_string lh;
       ignore(lh_pop_state lh);
